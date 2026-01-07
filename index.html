@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ace Selection: Cyber Security</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <canvas id="cyberCanvas"></canvas>
+    <div class="vignette"></div>
+
+    <div class="ace-container">
+        <div class="header">
+            <div class="system-status">ACE_SYS_v2.0</div>
+            <div id="main-timer">30:00</div>
+        </div>
+
+        <div class="display-area">
+            <div id="progress-tag">READY TO INITIALIZE</div>
+            <div id="question-text">SYSTEM</div>
+        </div>
+
+        <div class="input-group">
+            <input type="number" id="answer-input" placeholder="..." disabled inputmode="numeric">
+            <button id="action-btn">START</button>
+        </div>
+
+        <div class="feedback-area">
+            <div id="feedback-msg">AWAITING COMMAND...</div>
+            <div id="correct-reveal"></div>
+        </div>
+    </div>
+
+    <div id="result-overlay" class="overlay">
+        <div class="result-card">
+            <h2 class="result-title">PERFORMANCE ANALYSIS</h2>
+            <div class="result-grid">
+                <div class="res-box">
+                    <span>SUCCESS</span>
+                    <b id="res-correct" class="text-accent">0</b>
+                </div>
+                <div class="res-box">
+                    <span>FAILED</span>
+                    <b id="res-wrong" class="text-error">0</b>
+                </div>
+                <div class="res-box full">
+                    <span>AVG RESPONSE TIME</span>
+                    <b id="res-avg-correct">0.00s</b>
+                </div>
+            </div>
+            <div class="time-logs">
+                <div id="log-list"></div>
+            </div>
+            <button class="retry-btn" onclick="location.reload()">RE-INITIALIZE</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
