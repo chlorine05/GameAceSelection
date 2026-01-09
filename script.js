@@ -17,11 +17,11 @@ setInterval(() => {
 
 // ===== SOUND SYSTEM =====
 const sounds = {
-    start: new Audio('sounds/mixkit-sci-fi-click-900.wav'),
-    correct: new Audio('sounds/mixkit-digital-quick-tone-2866.wav'),
-    wrong: new Audio('sounds/mixkit-sci-fi-error-alert-898.wav'),
-    timeout: new Audio('sounds/mixkit-alarm-digital-clock-beep-989.wav'),
-    finish: new Audio('sounds/mixkit-completion-of-a-level-2063.wav')
+    start: new Audio('sounds/mixkit-sci-fi-click-900.mp3'),
+    correct: new Audio('sounds/mixkit-digital-quick-tone-2866.mp3'),
+    wrong: new Audio('sounds/mixkit-sci-fi-error-alert-898.mp3'),
+    timeout: new Audio('sounds/mixkit-alarm-digital-clock-beep-989.mp3'),
+    finish: new Audio('sounds/mixkit-completion-of-a-level-2063.mp3')
 };
 Object.values(sounds).forEach(s => { s.volume = 0.35; s.preload = 'auto'; });
 const playSound = s => { s.currentTime = 0; s.play().catch(() => { }); };
