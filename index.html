@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ace Selection: Cyber Security v3.0</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -25,9 +25,9 @@
         </div>
 
         <div class="mode-select">
-            <button data-mode="easy" type="button">EASY</button>
-            <button data-mode="medium" type="button" class="active">MEDIUM</button>
-            <button data-mode="hard" type="button">HARD</button>
+            <button data-mode="easy">EASY</button>
+            <button data-mode="medium" class="active">MEDIUM</button>
+            <button data-mode="hard">HARD</button>
         </div>
 
         <div class="question-timer">
@@ -40,7 +40,7 @@
         </div>
 
         <div class="feedback-area">
-            <div id="feedback-msg" class="center-text">AWAITING COMMAND...</div>
+            <div id="feedback-msg">AWAITING COMMAND...</div>
             <div id="correct-reveal"></div>
         </div>
     </div>
@@ -49,14 +49,13 @@
         <div class="result-card">
             <h2 class="result-title">TERMINAL REPORT</h2>
             <div class="result-grid">
-                <div class="res-box"><span>SUCCESS :</span> <b id="res-correct" style="color: #00ff41;">0</b></div>
-                <div class="res-box"><span>FAILED :</span> <b id="res-wrong" style="color: #ff3e3e;">0</b></div>
-                <div class="res-box full"><span>AVG RESP :</span> <b id="res-avg-correct">0.00s</b></div>
+                <div class="res-box">SUCCESS : <b id="res-correct" style="color: #00ff41;">0</b></div>
+                <div class="res-box">FAILED : <b id="res-wrong" style="color: #ff3e3e;">0</b></div>
+                <div class="res-box full">AVG RESPONSE : <b id="res-avg-correct">0.00s</b></div>
             </div>
             <div class="time-logs">
                 <div id="log-list"></div>
             </div>
-            <div class="final-stars" id="final-stars"></div>
             <button class="retry-btn" type="button" onclick="location.reload()">RE-INITIALIZE</button>
         </div>
     </div>
