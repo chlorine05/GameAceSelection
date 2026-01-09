@@ -42,23 +42,14 @@ body {
     max-width: 420px;
     background: var(--glass);
     backdrop-filter: blur(15px);
-    padding: 25px;
+    padding: 20px;
     border: 1px solid rgba(0, 255, 65, 0.2);
     border-radius: 8px;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
     display: flex;
     flex-direction: column;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ace-container.correct {
-    border-color: var(--accent);
-    box-shadow: 0 0 30px var(--accent-glow);
-}
-
-.ace-container.wrong {
-    border-color: var(--error);
-    box-shadow: 0 0 30px rgba(255, 62, 62, 0.3);
+    min-height: 450px;
+    /* cukup untuk hp */
 }
 
 .header {
@@ -66,8 +57,8 @@ body {
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #222;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 #main-timer {
@@ -82,10 +73,10 @@ body {
 }
 
 #question-text {
-    font-size: 2.4rem;
+    font-size: 2rem;
     font-weight: 800;
     text-align: center;
-    min-height: 3.5rem;
+    min-height: 3rem;
     text-shadow: 0 0 10px var(--accent-glow);
     margin-bottom: 10px;
 }
@@ -93,7 +84,7 @@ body {
 .mode-select {
     display: flex;
     gap: 5px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     transition: opacity 0.3s;
 }
 
@@ -102,10 +93,10 @@ body {
     background: #000;
     color: var(--accent);
     border: 1px solid #004411;
-    padding: 10px 0;
+    padding: 8px 0;
     cursor: pointer;
     font-family: inherit;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
 }
 
 .mode-select button.active {
@@ -118,47 +109,46 @@ body {
     text-align: center;
     font-size: 0.75rem;
     color: #666;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .input-group {
     display: flex;
     gap: 10px;
-    width: 100%;
+    flex-wrap: wrap;
+    /* responsive */
     margin-bottom: 15px;
 }
 
 #answer-input {
-    flex: 3;
+    flex: 2 1 60%;
+    min-width: 100px;
     background: #000;
     border: 1px solid #333;
-    border-radius: 6px;
+    border-radius: 4px;
     color: var(--accent);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     text-align: center;
-    outline: none;
-    padding: 12px;
+    padding: 10px;
 }
 
 #action-btn {
-    flex: 1.2;
+    flex: 1 1 30%;
+    min-width: 80px;
     background: var(--accent);
     color: black;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     font-weight: 800;
     cursor: pointer;
     font-family: inherit;
     text-transform: uppercase;
-    transition: 0.2s;
 }
 
-#action-btn:active {
-    transform: scale(0.95);
-}
-
-.feedback-area .center-text {
+.feedback-area {
     text-align: center;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
 }
 
 .overlay {
@@ -174,7 +164,7 @@ body {
 .result-card {
     background: #0a0a0a;
     border: 1px solid var(--accent);
-    padding: 30px;
+    padding: 25px;
     width: 90%;
     max-width: 360px;
     text-align: center;
@@ -185,12 +175,12 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin: 20px 0;
+    margin: 15px 0;
 }
 
 .res-box {
     background: #111;
-    padding: 15px;
+    padding: 10px;
     border-radius: 4px;
 }
 
@@ -206,25 +196,18 @@ body {
     background: #000;
     padding: 10px;
     border: 1px solid #222;
-    margin-bottom: 20px;
-    line-height: 1.6;
+    line-height: 1.5;
+    margin-bottom: 10px;
 }
 
 .retry-btn {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     background: var(--accent);
     border: none;
     font-weight: 800;
     cursor: pointer;
     font-family: inherit;
-}
-
-.final-stars {
-    margin-top: 10px;
-    font-size: 1.4rem;
-    color: gold;
-    letter-spacing: 3px;
 }
 
 @keyframes blink {
@@ -241,7 +224,7 @@ body {
     border-radius: 50%;
     pointer-events: none;
     z-index: 999;
-    animation: starFly 1.5s ease-out forwards;
+    animation: starFly 1s ease-out forwards;
 }
 
 @keyframes starFly {
