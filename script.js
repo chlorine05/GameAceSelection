@@ -4,8 +4,8 @@ const ctx = canvas.getContext('2d');
 let fontSize = 16, columns, drops;
 
 function initMatrix() {
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     columns = Math.floor(canvas.width / fontSize);
     drops = Array(columns).fill(1);
 }
@@ -19,7 +19,7 @@ setInterval(() => {
     ctx.font = fontSize + "px monospace";
 
     drops.forEach((y, i) => {
-        const t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%".charAt(Math.random() * 40 | 0);
+        const t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%".charAt(Math.floor(Math.random() * 40));
         ctx.fillText(t, i * fontSize, y * fontSize);
         drops[i] = y * fontSize > canvas.height && Math.random() > 0.975 ? 0 : y + 1;
     });
@@ -33,10 +33,10 @@ const sounds = {
     timeout: new Audio('sounds/mixkit-alarm-digital-clock-beep-989.wav'),
     finish: new Audio('sounds/mixkit-completion-of-a-level-2063.wav')
 };
-Object.values(sounds).forEach(s => s.volume = 0.35);
-const playSound = s => { s.currentTime = 0; s.play(); };
+Object.values(sounds).forEach(s => { s.volume = 0.35; s.preload = 'auto'; });
+const playSound = s => { s.currentTime = 0; s.play().catch(() => { }); };
 
-// ===== DOM =====
+// ===== DOM ELEMENTS =====
 const qEl = document.getElementById('question-text');
 const inEl = document.getElementById('answer-input');
 const btn = document.getElementById('action-btn');
@@ -44,6 +44,7 @@ const feed = document.getElementById('feedback-msg');
 const reveal = document.getElementById('correct-reveal');
 const box = document.querySelector('.ace-container');
 const timerEl = document.getElementById('main-timer');
+const qTimerEl = document.getElementById('question-timer');
 const progressEl = document.getElementById('progress-tag');
 
 // ===== GAME STATE =====
@@ -51,31 +52,29 @@ let solved = 0, correct = 0, wrong = 0, streak = 0;
 let currentAnswer, active = false, finished = false;
 let correctTimes = [], points = 0;
 
-// Batas soal per mode
-const maxQuestions = { easy: 5, medium: 10, hard: 15 };
-// Reward per mode
+// ===== CONFIG =====
+const maxQuestions = { easy: 10, medium: 15, hard: 20 };
 const rewardPoints = { easy: 50, medium: 500, hard: 1000 };
+let mode = "medium";
 
 // ===== MODE BUTTONS =====
-let mode = "medium";
 document.querySelectorAll('.mode-select button').forEach(btnMode => {
     btnMode.onclick = () => {
+        if (active) return;
         document.querySelectorAll('.mode-select button').forEach(b => b.classList.remove('active'));
         btnMode.classList.add('active');
         mode = btnMode.dataset.mode;
     };
 });
 
-// ===== TIMER FORMAT =====
-function formatTime(t) {
-    const m = Math.floor(t / 60);
-    const s = t % 60;
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
-}
-
-// ===== GLOBAL TIMER =====
+// ===== TIMERS =====
 let globalTime = 10 * 60, globalInterval;
+let questionTime = 60, questionInterval;
+
+function formatTime(t) { const m = Math.floor(t / 60); const s = t % 60; return `${m}:${s < 10 ? '0' : ''}${s}`; }
+
 function startGlobalTimer() {
+    clearInterval(globalInterval);
     timerEl.innerText = formatTime(globalTime);
     globalInterval = setInterval(() => {
         if (!active) return;
@@ -86,31 +85,23 @@ function startGlobalTimer() {
     }, 1000);
 }
 
-// ===== QUESTION TIMER =====
-let questionTime = 60, questionInterval;
 function startQuestionTimer() {
     clearInterval(questionInterval);
     questionTime = 60;
+    qTimerEl.innerText = questionTime;
     questionInterval = setInterval(() => {
         questionTime--;
+        qTimerEl.innerText = questionTime;
         if (questionTime === 5) {
-            feed.innerText = "⚠️ WAKTU ANDA 5 DETIK LAGI";
-            feed.classList.add('warning');
+            feed.innerText = "⚠️ SYSTEM WARNING: 5s LEFT";
             playSound(sounds.timeout);
         }
-        if (questionTime <= 0) {
-            clearInterval(questionInterval);
-            wrong++; streak = 0; solved++;
-            feed.innerText = "TIME OUT";
-            reveal.innerText = `EXPECTED: ${currentAnswer}`;
-            box.classList.add('wrong');
-            setTimeout(() => box.classList.remove('wrong'), 300);
-            setTimeout(nextQuestion, 800);
-        }
+        if (questionTime <= 0) { clearInterval(questionInterval); markWrong(); }
     }, 1000);
 }
 
 // ===== QUESTION GENERATOR =====
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function generateQuestion() {
     let a, b, c;
     if (mode === "easy") { a = rand(10, 30); b = rand(1, 20); c = rand(0, 10); }
@@ -118,93 +109,118 @@ function generateQuestion() {
     else { a = rand(30, 80); b = rand(10, 50); c = rand(5, 30); }
     return { text: `${a} + ${b} - ${c}`, answer: a + b - c };
 }
-function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
 // ===== STAR ANIMATION =====
 function spawnStar() {
-    const star = document.createElement('div');
-    star.className = 'star-fly';
-    star.style.left = `${Math.random() * (window.innerWidth - 20)}px`;
-    star.style.top = `${window.innerHeight - 50}px`;
-    document.body.appendChild(star);
-    setTimeout(() => star.remove(), 1000);
+    for (let i = 0; i < 3; i++) { // 3 bintang terbang per jawaban benar
+        const star = document.createElement('div');
+        star.className = 'star-fly';
+        star.style.left = `${Math.random() * (window.innerWidth - 20)}px`;
+        star.style.top = `${window.innerHeight - 50}px`;
+        document.body.appendChild(star);
+        setTimeout(() => star.remove(), 1500);
+    }
 }
 
-// ===== NEXT QUESTION =====
+// ===== GAME FUNCTIONS =====
 function nextQuestion() {
     if (solved >= maxQuestions[mode]) return finish();
-
-    feed.innerText = ''; feed.classList.remove('warning'); reveal.innerText = '';
+    feed.innerText = 'AWAITING COMMAND...';
+    feed.classList.remove('warning');
+    reveal.innerText = '';
 
     const q = generateQuestion();
     qEl.innerText = q.text;
     currentAnswer = q.answer;
 
-    inEl.value = ''; inEl.focus();
-    progressEl.innerText = `MODE ${mode.toUpperCase()} • SOAL ${solved + 1}/${maxQuestions[mode]}`;
+    inEl.value = '';
+    inEl.disabled = false;
+    inEl.focus();
 
+    progressEl.innerText = `LEVEL: ${mode.toUpperCase()} | TASK ${solved + 1}/${maxQuestions[mode]}`;
     startQuestionTimer();
 }
 
-// ===== SUBMIT =====
-function submit() {
-    if (!active) return;
-    const val = parseInt(inEl.value); if (isNaN(val)) return;
-    clearInterval(questionInterval);
-
-    if (val === currentAnswer) {
-        playSound(sounds.correct);
-        correct++; streak++; points += rewardPoints[mode];
-        correctTimes.push(60 - questionTime);
-        feed.innerText = `ACCESS GRANTED x${streak} (+${rewardPoints[mode]} pts)`;
-        box.classList.add('correct'); setTimeout(() => box.classList.remove('correct'), 300);
-        spawnStar(); // animasi bintang
-    } else {
-        playSound(sounds.wrong); wrong++; streak = 0;
-        feed.innerText = "ACCESS DENIED"; reveal.innerText = `EXPECTED: ${currentAnswer}`;
-        box.classList.add('wrong'); setTimeout(() => box.classList.remove('wrong'), 300);
-    }
+function markCorrect() {
+    correct++; streak++; points += rewardPoints[mode];
+    correctTimes.push(60 - questionTime);
+    playSound(sounds.correct);
+    feed.innerText = `ACCESS GRANTED [STREAK: x${streak}]`;
+    box.classList.add('correct');
+    setTimeout(() => box.classList.remove('correct'), 300);
+    spawnStar();
     solved++;
-    setTimeout(nextQuestion, 700);
+    setTimeout(nextQuestion, 600);
 }
 
-// ===== START =====
-function start() {
-    if (active) return;
-    active = true; finished = false;
-    solved = correct = wrong = streak = 0; correctTimes = []; points = 0; globalTime = 10 * 60;
-    playSound(sounds.start);
-    btn.innerText = "ENTER"; btn.onclick = submit; inEl.disabled = false;
-    startGlobalTimer(); nextQuestion();
+function markWrong() {
+    wrong++; streak = 0; solved++;
+    playSound(sounds.wrong);
+    feed.innerText = "ACCESS DENIED - DATA MISMATCH";
+    reveal.innerText = `EXPECTED_VAL: ${currentAnswer}`;
+    box.classList.add('wrong');
+    setTimeout(() => box.classList.remove('wrong'), 300);
+    setTimeout(nextQuestion, 1200);
 }
 
-// ===== FINISH =====
+function submitAnswer() {
+    if (!active || finished) return;
+    const val = parseInt(inEl.value);
+    if (isNaN(val)) return;
+    clearInterval(questionInterval);
+    val === currentAnswer ? markCorrect() : markWrong();
+}
+
+// ===== CORE CONTROLLER =====
+function handleAction() {
+    if (!active) {
+        active = true; finished = false; solved = 0; correct = 0; wrong = 0; streak = 0; correctTimes = []; points = 0; globalTime = 10 * 60;
+        playSound(sounds.start);
+        btn.innerText = "ENTER";
+        inEl.disabled = false;
+        inEl.placeholder = "ANSWER";
+        document.querySelector('.mode-select').style.display = "none";
+        startGlobalTimer();
+        nextQuestion();
+    } else { submitAnswer(); }
+}
+
+// ===== FINISH GAME =====
 function finish() {
     if (finished) return;
     finished = true; active = false;
-    clearInterval(globalInterval); clearInterval(questionInterval);
+    clearInterval(globalInterval);
+    clearInterval(questionInterval);
     playSound(sounds.finish);
+    inEl.disabled = true; inEl.value = '';
+    btn.innerText = "DONE"; btn.style.opacity = "0.5"; btn.style.pointerEvents = "none";
+    document.querySelector('.mode-select').style.display = "flex";
 
-    document.getElementById('result-overlay').style.display = 'flex';
     document.getElementById('res-correct').innerText = correct;
     document.getElementById('res-wrong').innerText = wrong;
     const avg = correctTimes.length ? (correctTimes.reduce((a, b) => a + b, 0) / correctTimes.length).toFixed(2) : "0.00";
     document.getElementById('res-avg-correct').innerText = `${avg}s`;
-    document.getElementById('log-list').innerHTML = correctTimes.map((t, i) => `LOG_${i + 1}: <span style="color:#00ff41">${t.toFixed(2)}s</span>`).join('<br>');
 
+    const logList = document.getElementById('log-list');
+    logList.innerHTML = `<div style="margin-bottom:10px;color:#666;">--- SYSTEM LOG ---</div>`;
+    logList.innerHTML += correctTimes.map((t, i) => `OP_${i + 1}: <span style="color:#00ff41">OK (${t}s)</span>`).join('<br>');
+
+    // FINAL SCORE & 3 STARS
     const percent = solved > 0 ? (correct / solved) * 100 : 0;
-    let stars = 0;
-    if (percent >= 90) stars = 3;
-    else if (percent >= 75) stars = 2;
-    else if (percent >= 50) stars = 1;
+    let stars = percent >= 90 ? 3 : percent >= 70 ? 2 : percent >= 40 ? 1 : 0;
+    document.getElementById('final-stars').innerText = '★'.repeat(stars) + '☆'.repeat(3 - stars);
 
-    const starSymbols = '★'.repeat(stars) + '☆'.repeat(3 - stars);
     const rewardEl = document.createElement('div');
     rewardEl.style.marginTop = "10px";
-    rewardEl.innerHTML = `TOTAL POINTS: <b style="color:#00ff41">${points}</b> <br> BINTANG: <span style="color:gold;font-size:1.2rem">${starSymbols}</span>`;
-    document.getElementById('log-list').appendChild(rewardEl);
+    rewardEl.style.fontSize = "1.2rem";
+    rewardEl.style.color = "#00ff41";
+    rewardEl.style.fontWeight = "800";
+    rewardEl.innerText = `POINTS : ${points.toLocaleString()}`;
+    logList.appendChild(rewardEl);
+
+    document.getElementById('result-overlay').style.display = 'flex';
 }
 
-// ===== EVENTS =====
-btn.onclick = start;
-inEl.addEventListener('keydown', e => e.key === 'Enter' && submit());
+// ===== EVENT LISTENERS =====
+btn.addEventListener('click', handleAction);
+inEl.addEventListener('keydown', e => { if (e.key === 'Enter') { if (!active) handleAction(); else submitAnswer(); } });
