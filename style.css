@@ -22,29 +22,22 @@ body {
     overflow: hidden;
 }
 
-/* Background Matrix */
+/* ===== MATRIX BACKGROUND ===== */
 #cyberCanvas {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     z-index: -1;
     opacity: 0.4;
 }
 
 .vignette {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: radial-gradient(circle, transparent 40%, black 150%);
     pointer-events: none;
-    z-index: 0;
 }
 
-/* Main Container */
+/* ===== MAIN CONTAINER ===== */
 .ace-container {
     width: 92%;
     max-width: 420px;
@@ -53,23 +46,30 @@ body {
     padding: 25px;
     border: 1px solid rgba(0, 255, 65, 0.3);
     border-radius: 8px;
-    z-index: 10;
     box-shadow: 0 0 40px rgba(0, 255, 65, 0.1);
+    transition: box-shadow 0.3s ease;
 }
 
+/* ===== HEADER ===== */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #333;
     padding-bottom: 15px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 #main-timer {
     font-size: 1.4rem;
     color: var(--accent);
     font-weight: 800;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+
+#main-timer.danger {
+    color: var(--error);
+    text-shadow: 0 0 10px rgba(255, 62, 62, 0.8);
 }
 
 .system-status {
@@ -77,32 +77,74 @@ body {
     color: #666;
 }
 
+/* ===== DISPLAY ===== */
 .display-area {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
 }
 
 #progress-tag {
     font-size: 0.7rem;
     color: #888;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 #question-text {
-    font-size: 2.8rem;
+    font-size: 2.6rem;
     font-weight: 800;
-    min-height: 4rem;
+    min-height: 3.5rem;
 }
 
-/* Input & Button Group */
+/* ===== MODE SELECT ===== */
+.mode-select {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.mode-select button {
+    flex: 1;
+    background: #000;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    font-size: 0.7rem;
+    padding: 8px 0;
+}
+
+.mode-select button.active {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
+}
+
+/* ===== QUESTION TIMER ===== */
+.question-timer {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-bottom: 12px;
+}
+
+.question-timer.danger {
+    color: var(--error);
+    animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0.3;
+    }
+}
+
+/* ===== INPUT ===== */
 .input-group {
     display: flex;
     background: #000;
     border: 1px solid #444;
     border-radius: 4px;
-    overflow: hidden;
-    height: 55px;
+    min-height: 55px;
     margin-bottom: 15px;
+    overflow: hidden;
 }
 
 input {
@@ -110,18 +152,10 @@ input {
     background: transparent;
     border: none;
     color: white;
-    font-size: 1.5rem;
-    padding: 0 10px;
-    outline: none;
+    font-size: 1.4rem;
     text-align: center;
-    width: 100%;
+    outline: none;
     font-family: inherit;
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
 }
 
 button {
@@ -132,39 +166,74 @@ button {
     font-weight: 800;
     cursor: pointer;
     font-family: inherit;
-    font-size: 0.9rem;
-    transition: 0.2s;
-    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: filter 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
 }
 
 button:active {
-    filter: brightness(0.8);
+    filter: brightness(0.85);
 }
 
+/* ===== FEEDBACK ===== */
 .feedback-area {
     height: 60px;
     text-align: center;
+    font-size: 0.75rem;
 }
 
-#feedback-msg {
-    font-size: 0.75rem;
+#feedback-msg.warning {
+    color: var(--error);
+    animation: blink 0.8s infinite;
 }
 
 #correct-reveal {
     color: var(--error);
     font-weight: 800;
     margin-top: 5px;
-    font-size: 0.8rem;
 }
 
-/* Overlay & Result Card */
+/* ===== GAME EFFECTS ===== */
+.ace-container.correct {
+    box-shadow: 0 0 35px rgba(0, 255, 65, 0.9);
+}
+
+.ace-container.wrong {
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-4px);
+    }
+
+    50% {
+        transform: translateX(4px);
+    }
+
+    75% {
+        transform: translateX(-4px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* ===== RESULT OVERLAY ===== */
 .overlay {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: rgba(0, 0, 0, 0.95);
     z-index: 100;
     justify-content: center;
@@ -176,69 +245,69 @@ button:active {
     background: #111;
     padding: 25px;
     border: 1px solid var(--accent);
-    width: 100%;
-    max-width: 380px;
     border-radius: 8px;
+    max-width: 380px;
+    width: 100%;
     text-align: center;
 }
 
 .result-title {
     color: var(--accent);
-    font-size: 1.2rem;
     margin-top: 0;
 }
 
-.result-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 20px 0;
+/* ===== REWARD STARS ===== */
+.reward-stars {
+    margin-top: 10px;
+    font-size: 1.2rem;
+    color: gold;
 }
 
-.res-box {
-    background: #000;
-    padding: 12px;
-    border: 1px solid #222;
+.reward-points {
+    margin-top: 5px;
+    color: #00ff41;
+    font-weight: bold;
 }
 
-.res-box span {
-    display: block;
-    font-size: 0.55rem;
-    color: #888;
-    margin-bottom: 5px;
+/* ===== STAR ANIMATION ===== */
+.star-fly {
+    position: absolute;
+    font-size: 24px;
+    color: gold;
+    pointer-events: none;
+    animation: flyUp 1s ease-out forwards, sparkle 1s linear infinite;
 }
 
-.text-accent {
-    color: var(--accent);
+@keyframes flyUp {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-50px) scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100px) scale(1);
+        opacity: 0;
+    }
 }
 
-.text-error {
-    color: var(--error);
+@keyframes sparkle {
+
+    0%,
+    100% {
+        text-shadow: 0 0 2px gold;
+    }
+
+    50% {
+        text-shadow: 0 0 8px gold;
+    }
 }
 
-.full {
-    grid-column: span 2;
-}
-
-.time-logs {
-    background: #000;
-    padding: 10px;
-    border: 1px solid #222;
-    max-height: 120px;
-    overflow-y: auto;
-    text-align: left;
-    font-size: 0.7rem;
-    margin-bottom: 20px;
-    color: #666;
-}
-
-.retry-btn {
-    width: 100%;
-    height: 45px;
-    border-radius: 4px;
-}
-
-/* Responsivitas Media Query */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 400px) {
     #question-text {
         font-size: 2.2rem;
