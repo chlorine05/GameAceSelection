@@ -4,41 +4,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ace Selection: Cyber Security</title>
+    <title>Ace Selection: Cyber Security v2.1</title>
+
+    <!-- STYLE -->
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== STAR ANIMATION ===== */
+        .star-fly {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background: gold;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+            animation: starFly 1s ease-out forwards;
+        }
+
+        @keyframes starFly {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-200px) scale(0.5);
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
+    <!-- MATRIX BACKGROUND -->
     <canvas id="cyberCanvas"></canvas>
     <div class="vignette"></div>
 
+    <!-- PRELOAD SOUND -->
+    <audio preload="auto" src="sounds/mixkit-sci-fi-click-900.wav"></audio>
+    <audio preload="auto" src="sounds/mixkit-digital-quick-tone-2866.wav"></audio>
+    <audio preload="auto" src="sounds/mixkit-sci-fi-error-alert-898.wav"></audio>
+    <audio preload="auto" src="sounds/mixkit-alarm-digital-clock-beep-989.wav"></audio>
+    <audio preload="auto" src="sounds/mixkit-completion-of-a-level-2063.wav"></audio>
+
+    <!-- MAIN GAME -->
     <div class="ace-container">
+
+        <!-- HEADER -->
         <div class="header">
-            <div class="system-status">ACE_SYS_v2.0</div>
-            <div id="main-timer">30:00</div>
+            <div class="system-status">ACE_SYS_v2.1</div>
+            <div id="main-timer">10:00</div>
         </div>
 
+        <!-- DISPLAY -->
         <div class="display-area">
-            <div id="progress-tag">READY TO INITIALIZE</div>
-            <div id="question-text">SYSTEM</div>
+            <div id="progress-tag">READY</div>
+            <div id="question-text">ACE SELECTION</div>
         </div>
 
+        <!-- MODE SELECT -->
+        <div class="mode-select">
+            <button data-mode="easy" type="button">EASY</button>
+            <button data-mode="medium" type="button" class="active">MEDIUM</button>
+            <button data-mode="hard" type="button">HARD</button>
+        </div>
+
+        <!-- QUESTION TIMER -->
+        <div class="question-timer">
+            TIME : <span id="question-timer">60</span>s
+        </div>
+
+        <!-- INPUT -->
         <div class="input-group">
-            <input type="number" id="answer-input" placeholder="..." disabled inputmode="numeric">
-            <button id="action-btn">START</button>
+            <input type="number" id="answer-input" placeholder="ANSWER" inputmode="numeric" disabled>
+            <button id="action-btn" type="button">START</button>
         </div>
 
+        <!-- FEEDBACK -->
         <div class="feedback-area">
             <div id="feedback-msg">AWAITING COMMAND...</div>
             <div id="correct-reveal"></div>
         </div>
+
     </div>
 
+    <!-- RESULT OVERLAY -->
     <div id="result-overlay" class="overlay">
         <div class="result-card">
-            <h2 class="result-title">PERFORMANCE ANALYSIS</h2>
+            <h2 class="result-title">PERFORMANCE</h2>
+
             <div class="result-grid">
                 <div class="res-box">
                     <span>SUCCESS</span>
@@ -49,17 +106,22 @@
                     <b id="res-wrong" class="text-error">0</b>
                 </div>
                 <div class="res-box full">
-                    <span>AVG RESPONSE TIME</span>
+                    <span>AVG RESPONSE</span>
                     <b id="res-avg-correct">0.00s</b>
                 </div>
             </div>
+
             <div class="time-logs">
                 <div id="log-list"></div>
             </div>
-            <button class="retry-btn" onclick="location.reload()">RE-INITIALIZE</button>
+
+            <button class="retry-btn" type="button" onclick="location.reload()">
+                RE-INITIALIZE
+            </button>
         </div>
     </div>
 
+    <!-- SCRIPT -->
     <script src="script.js"></script>
 </body>
 
